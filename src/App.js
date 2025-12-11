@@ -1,23 +1,50 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import TaskManager from './pages/TaskManager';
 import './App.css';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showLogin, setShowLogin] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    setIsAuthenticated(false);
+    setShowLogin(true);
+  };
+
+  const switchToSignup = () => {
+    setShowLogin(false);
+  };
+
+  const switchToLogin = () => {
+    setShowLogin(true);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {isAuthenticated ? (
+        <TaskManager onLogout={handleLogout} />
+      ) : (
+        showLogin ? (
+          <Login onLogin={handleLogin} switchToSignup={switchToSignup} />
+        ) : (
+          <Signup switchToLogin={switchToLogin} />
+        )
+      )}
     </div>
   );
 }
